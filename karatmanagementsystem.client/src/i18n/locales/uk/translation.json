@@ -1,0 +1,46 @@
+{
+  "common": {
+    "save": "Зберегти",
+    "cancel": "Скасувати",
+    "not_found": "Не знайдено"
+  },
+  "home": {
+    "title": "Система управління Каратом",
+    "home": "Додому",
+    "orders": "Замовлення",
+    "tables": "Таблиці"
+  },
+  "orders": {
+    "title": "Замовлення",
+    "select_date": "Виберіть дату",
+    "all_orders": "Всі замовлення",
+    "processing_orders": "Замовлення в обробці",
+    "completed_orders": "Завершені замовлення",
+    "create_order": "Створити замовлення",
+    "order_list": "Список замовлень",
+    "order_details": "Деталі замовлення",
+    "processing": "В обробці",
+    "completed": "Завершено",
+    "ready": "Готово",
+    "pending": "Очікування",
+    "started_at": "Почато о",
+    "elapsed_time": "Час виконання",
+    "completed_at": "Завершено о",
+    "table": "Стіл",
+    "items": "Товари",
+    "notes": "Примітки",
+    "pcs": "шт.",
+    "begin": "Почати",
+    "suspend": "Зупинити",
+    "complete": "Завершити",
+    "add_order_dialog_title": "Додати замовлення на кухню",
+    "serving_table": "Стіл обслуговування",
+    "cook_item": "Страва",
+    "quantity": "Кількість",
+    "remove_item": "Видалити",
+    "add_item": "Додати позицію",
+    "saving": "Збереження...",
+    "error_select_table": "Будь ласка, виберіть стіл обслуговування.",
+    "error_add_item": "Будь ласка, додайте хоча б одну позицію."
+  }
+}

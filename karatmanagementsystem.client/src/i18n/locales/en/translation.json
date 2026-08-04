@@ -1,0 +1,46 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "not_found": "Not found"
+  },
+  "home": {
+    "title": "Karat Management System",
+    "home": "Home",
+    "orders": "Orders",
+    "tables": "Tables"
+  },
+  "orders": {
+    "title": "Orders",
+    "select_date": "Select Date",
+    "all_orders": "All Orders",
+    "processing_orders": "Processing Orders",
+    "completed_orders": "Completed Orders",
+    "create_order": "Create Order",
+    "order_list": "Order List",
+    "order_details": "Order Details",
+    "processing": "Processing",
+    "completed": "Completed",
+    "pending": "Pending",
+    "started_at": "Started at",
+    "elapsed_time": "Elapsed time",
+    "completed_at": "Completed at",
+    "ready": "Ready",
+    "table": "Table",
+    "items": "Items",
+    "notes": "Notes",
+    "pcs": "pcs.",
+    "begin": "Begin",
+    "suspend": "Suspend",
+    "complete": "Complete",
+    "add_order_dialog_title": "Add Cook Order",
+    "serving_table": "Serving table",
+    "cook_item": "Cook item",
+    "quantity": "Quantity",
+    "remove_item": "Remove",
+    "add_item": "Add item",
+    "saving": "Saving...",
+    "error_select_table": "Please select a serving table.",
+    "error_add_item": "Please add at least one cook item."
+  }
+}

@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="karatmanagementsystem.client/karatmanagementsystem.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="KaratManagementSystem.Server/KaratManagementSystem.Server.csproj" />
+</Solution>
