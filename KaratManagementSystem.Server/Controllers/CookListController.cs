@@ -1,12 +1,14 @@
 ﻿using KaratManagementSystem.Server.Models;
 using KaratManagementSystem.Server.Requests;
 using KaratManagementSystem.Server.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace KaratManagementSystem.Server.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class CookListController(DbApp dbApp) : ControllerBase
     {
@@ -180,7 +182,7 @@ namespace KaratManagementSystem.Server.Controllers
             var newOrder = new CookOrder()
             {
                 Table = table,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTimeOffset.Now
             };
             _dbContext.CookOrders.Add(newOrder);
             _dbContext.SaveChanges();

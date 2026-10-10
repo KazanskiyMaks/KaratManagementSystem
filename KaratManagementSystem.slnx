@@ -1,4 +1,8 @@
 <Solution>
+  <Project Path="docker-compose.dcproj">
+    <BuildDependency Project="karatmanagementsystem.client/karatmanagementsystem.client.esproj" />
+    <Build />
+  </Project>
   <Project Path="karatmanagementsystem.client/karatmanagementsystem.client.esproj">
     <Build />
     <Deploy />

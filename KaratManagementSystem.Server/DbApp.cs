@@ -8,13 +8,13 @@ namespace KaratManagementSystem.Server
     {
         public DbApp(DbContextOptions<DbApp> options) : base(options)
         {
-            Database.EnsureCreated();
         }
 
         public DbSet<ServingTable> ServingTables { get; set; }
         public DbSet<CookItem> CookItems { get; set; }
         public DbSet<CookOrder> CookOrders { get; set; }
         public DbSet<CookOrderItem> CookOrderItems { get; set; }
+        public DbSet<AppUser> AppUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,6 +31,24 @@ namespace KaratManagementSystem.Server
                         .WithMany(o => o.CookOrderItems)
                         .HasForeignKey(oi => oi.CookOrderId));
 
+            modelBuilder.Entity<AppUser>()
+                .HasIndex(user => user.Login)
+                .IsUnique();
+
+            modelBuilder.Entity<AppUser>()
+                .Property(user => user.Login)
+                .HasMaxLength(64)
+                .IsRequired();
+
+            modelBuilder.Entity<AppUser>()
+                .Property(user => user.PasswordHash)
+                .IsRequired();
+
+            modelBuilder.Entity<AppUser>()
+                .Property(user => user.Role)
+                .HasMaxLength(32)
+                .IsRequired();
+#if TEST
             modelBuilder.Entity<ServingTable>().HasData(
                 new
                 {
@@ -68,7 +86,7 @@ namespace KaratManagementSystem.Server
                     Notes = "Терміново",
                     IsProcessing = false,
                     IsCompleted = false,
-                    CreatedAt = new DateTime(2026, 7, 31, 12, 0, 0)
+                    CreatedAt = new DateTimeOffset(2026, 7, 31, 12, 0, 0)
                 },
                 new
                 {
@@ -77,7 +95,7 @@ namespace KaratManagementSystem.Server
                     Notes = "Без соусу",
                     IsProcessing = true,
                     IsCompleted = false,
-                    CreatedAt = new DateTime(2026, 7, 31, 12, 30, 0)
+                    CreatedAt = new DateTimeOffset(2026, 7, 31, 12, 30, 0)
                 });
 
             modelBuilder.Entity<CookOrderItem>().HasData(
@@ -105,6 +123,7 @@ namespace KaratManagementSystem.Server
                     Quantity = 1,
                     IsReady = false
                 });
+#endif
         }
     }
 }

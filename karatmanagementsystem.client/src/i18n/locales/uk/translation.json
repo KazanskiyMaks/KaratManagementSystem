@@ -42,5 +42,16 @@
     "saving": "Збереження...",
     "error_select_table": "Будь ласка, виберіть стіл обслуговування.",
     "error_add_item": "Будь ласка, додайте хоча б одну позицію."
+  },
+  "auth": {
+    "login_button": "Увійти",
+    "logout_button": "Вийти",
+    "login_dialog_title": "Вхід",
+    "login_field_label": "Логін",
+    "password_field_label": "Пароль",
+    "login_confirm_button": "Підтвердити",
+    "login_in_progress": "Вхід...",
+    "login_failed": "Не вдалося увійти",
+    "validation_required": "Введіть логін і пароль."
   }
 }

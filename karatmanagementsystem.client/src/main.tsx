@@ -8,6 +8,9 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import './index.css';
 import App from './App.tsx';
 import "./i18n";
+import { initializeAuthFetch } from './auth';
+
+initializeAuthFetch();
 
 const darkTheme = createTheme({
     palette: {

@@ -76,6 +76,25 @@ export default function CookOrders() {
     const theme = useTheme();
     const { t } = useTranslation();
 
+    const [value, setValue] = useState(0);
+    const [orders, setOrders] = useState<CookOrder[]>([]);
+    const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+    const [open, setOpen] = useState<Record<number, boolean>>({});
+    const [currentTime, setCurrentTime] = useState(Date.now());
+    const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+    const [servingTables, setServingTables] = useState<ServingTable[]>([]);
+    const [cookItems, setCookItems] = useState<CookItem[]>([]);
+    const [selectedTableId, setSelectedTableId] = useState(0);
+    const [notes, setNotes] = useState('');
+    const [orderItems, setOrderItems] = useState<CookOrderItemDraft[]>([]);
+    const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
+    const [orderFormError, setOrderFormError] = useState('');
+    const previousOrderIdsRef = useRef<Set<number>>(new Set());
+    const isFirstLoadRef = useRef(true);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const [soundEnabled, setSoundEnabled] = useState(true);
+    const ignoreNotificationRef = useRef(false);
+
     function formatLocalDate(date: Date) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -143,33 +162,15 @@ export default function CookOrders() {
         const response = await fetch(`api/cookorder/date/near/${formattedDate}?${queryParams.toString()}`);
 
         if (!response.ok) {
-            throw new Error(`Failed to ${direction} get date (${response.status} ${response.statusText})`);
+            throw new Error(`Failed to get ${direction} date (${response.status} ${response.statusText})`);
         }
 
         const result = await response.json();
         const fetchDate = parseServerDate(result);
+        ignoreNotificationRef.current = true;
 
         return fetchDate;
     }
-
-    const [value, setValue] = useState(0);
-    const [orders, setOrders] = useState<CookOrder[]>([]);
-    const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-    const [open, setOpen] = useState<Record<number, boolean>>({});
-    const [currentTime, setCurrentTime] = useState(Date.now());
-    const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-    const [servingTables, setServingTables] = useState<ServingTable[]>([]);
-    const [cookItems, setCookItems] = useState<CookItem[]>([]);
-    const [selectedTableId, setSelectedTableId] = useState(0);
-    const [notes, setNotes] = useState('');
-    const [orderItems, setOrderItems] = useState<CookOrderItemDraft[]>([]);
-    const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
-    const [orderFormError, setOrderFormError] = useState('');
-    const previousOrderIdsRef = useRef<Set<number>>(new Set());
-    const isFirstLoadRef = useRef(true);
-    const audioRef = useRef<HTMLAudioElement | null>(null);
-    const [soundEnabled, setSoundEnabled] = useState(false);
-
 
     useEffect(() => {
         let isDisposed = false;
@@ -187,10 +188,11 @@ export default function CookOrders() {
             const nextIds = new Set(updatedOrders.map(o => o.id));
             const hasNewOrder = updatedOrders.some(o => !prevIds.has(o.id));
 
-            if (!isFirstLoadRef.current && hasNewOrder) {
+            if (!isFirstLoadRef.current && hasNewOrder && !ignoreNotificationRef.current) {
                 playNewOrderSound();
             }
 
+            ignoreNotificationRef.current = false;
             isFirstLoadRef.current = false;
             previousOrderIdsRef.current = nextIds;
             setOrders(updatedOrders);
@@ -366,6 +368,7 @@ export default function CookOrders() {
             setOrders(updatedOrders);
         } finally {
             setIsSubmittingOrder(false);
+            setNotes('');
         }
     }
 
@@ -458,7 +461,7 @@ export default function CookOrders() {
             <Button
                 variant="contained"
                 onClick={handleOpenAddDialog}
-                sx={{ position: 'absolute', bottom: 16, right: 16, aspectRatio: '1' }}>
+                sx={{ position: 'fixed', bottom: 16, right: 16, aspectRatio: '1' }}>
                 <AddIcon/>
             </Button>
             <Dialog open={isAddDialogOpen} onClose={handleCloseAddDialog} fullWidth maxWidth="sm">

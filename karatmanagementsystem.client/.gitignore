@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Server local secrets
+../KaratManagementSystem.Server/AuthSecrets.local.json

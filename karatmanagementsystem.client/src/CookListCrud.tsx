@@ -314,7 +314,7 @@ export default function CookListCrud() {
             const resp = await fetch('api/cooklist/cook_item', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: newRow.name }),
+                body: JSON.stringify({ itemName: newRow.name }),
             });
             if (!resp.ok) throw new Error('Create failed');
             const result = await resp.json();

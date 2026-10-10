@@ -42,5 +42,16 @@
     "saving": "Saving...",
     "error_select_table": "Please select a serving table.",
     "error_add_item": "Please add at least one cook item."
+  },
+  "auth": {
+    "login_button": "Login",
+    "logout_button": "Logout",
+    "login_dialog_title": "Sign in",
+    "login_field_label": "Login",
+    "password_field_label": "Password",
+    "login_confirm_button": "Confirm",
+    "login_in_progress": "Signing in...",
+    "login_failed": "Login failed",
+    "validation_required": "Enter login and password."
   }
 }

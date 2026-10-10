@@ -1,12 +1,14 @@
 ﻿using KaratManagementSystem.Server.Models;
 using KaratManagementSystem.Server.Requests;
 using KaratManagementSystem.Server.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace KaratManagementSystem.Server.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class CookOrderController(DbApp dbApp) : ControllerBase
     {
@@ -17,38 +19,47 @@ namespace KaratManagementSystem.Server.Controllers
         {
             return _dbContext.CookOrders
                 .Include(co => co.Table)
-                .Include(co => co.CookOrderItems)
+                .Include(co => co.CookOrderItems.OrderBy(oi => oi.Id))
                 .ThenInclude(oi => oi.CookItem);
         }
 
         [HttpGet("date/{date}")]
-        public IEnumerable<CookOrder> GetCookOrdersByDate(DateTime date, [FromQuery] bool? isProcessing, [FromQuery] bool? isCompleted)
+        public IEnumerable<CookOrder> GetCookOrdersByDate(DateTimeOffset date, [FromQuery] bool? isProcessing, [FromQuery] bool? isCompleted)
         {
+            var startOfDay = date.Date;
+            var endOfDay = startOfDay.AddDays(1);
+
             return _dbContext.CookOrders
                 .Include(co => co.Table)
                 .Include(co => co.CookOrderItems).ThenInclude(oi => oi.CookItem)
+                .AsEnumerable()
                 .Where(co => 
-                    co.CreatedAt.Date == date.Date
+                    co.CreatedAt >= startOfDay
+                    && co.CreatedAt < endOfDay
                     && (!isProcessing.HasValue || co.IsProcessing == isProcessing.Value)
                     && (!isCompleted.HasValue || co.IsCompleted == isCompleted.Value))
                 .OrderByDescending(co => co.CreatedAt);
         }
         [HttpGet("date/near/{date}")]
-        public DateTime GetNearOrdersDate(DateTime date, [FromQuery] int direction)
+        public DateTimeOffset GetNearOrdersDate(DateTimeOffset date, [FromQuery] int direction)
         {
             CookOrder? order;
-            var result = DateTime.UtcNow;
+            var result = DateTimeOffset.Now;
             switch (direction)
             {
                 case 0:
                     order = _dbContext.CookOrders
+                        .AsEnumerable()
+                        .OrderByDescending(co => co.CreatedAt)
                         .FirstOrDefault(co => co.CreatedAt < date);
                     if (order == null) break;
                     result = order.CreatedAt;
                     break;
                 case 1:
                     order = _dbContext.CookOrders
-                        .FirstOrDefault(co => co.CreatedAt > date);
+                        .AsEnumerable()
+                        .OrderBy(co => co.CreatedAt.Date)
+                        .FirstOrDefault(co => co.CreatedAt.Date > date);
                     if (order == null) break;
                     result = order.CreatedAt;
                     break;
@@ -61,7 +72,8 @@ namespace KaratManagementSystem.Server.Controllers
         {
             var cookOrder = _dbContext.CookOrders
                 .Include(co => co.Table)
-                .Include(co => co.CookOrderItems).ThenInclude(oi => oi.CookItem)
+                .Include(co => co.CookOrderItems.OrderBy(oi => oi.Id))
+                .ThenInclude(oi => oi.CookItem)
                 .FirstOrDefault(co => co.Id == id);
             if (cookOrder == null)
             {
@@ -85,6 +97,7 @@ namespace KaratManagementSystem.Server.Controllers
 
             var cookOrder = new CookOrder
             {
+                CreatedAt = DateTimeOffset.Now,
                 Table = servingTable,
                 Notes = request.Notes
             };
@@ -126,7 +139,7 @@ namespace KaratManagementSystem.Server.Controllers
             }
 
             cookOrder.IsProcessing = !cookOrder.IsProcessing;
-            cookOrder.StartedAt = DateTime.UtcNow;
+            cookOrder.StartedAt = DateTimeOffset.Now;
             try
             {
                 _dbContext.SaveChanges();
@@ -155,7 +168,7 @@ namespace KaratManagementSystem.Server.Controllers
             }
 
             cookOrder.IsCompleted = true;
-            cookOrder.CompletedAt = DateTime.UtcNow;
+            cookOrder.CompletedAt = DateTimeOffset.Now;
             try
             {
                 _dbContext.SaveChanges();
@@ -188,17 +201,21 @@ namespace KaratManagementSystem.Server.Controllers
             {
                 _dbContext.Entry(cookOrderItem).State = EntityState.Modified;
                 _dbContext.SaveChanges();
-                
+
                 var cookOrder = _dbContext.CookOrders
                     .Include(co => co.Table)
                     .Include(co => co.CookOrderItems)
-                    .ThenInclude(coi => coi.CookItem)
+                        .ThenInclude(coi => coi.CookItem)
                     .FirstOrDefault(co => co.Id == cookOrderItem.CookOrderId);
-                
-                return new CookOrderResponse
+
+                if (cookOrder is not null)
                 {
-                    CookOrder = cookOrder
-                };
+                    cookOrder.CookOrderItems = cookOrder.CookOrderItems
+                        .OrderBy(oi => oi.Id)
+                        .ToList();
+                }
+
+                return new(cookOrder);
             }
             catch (Exception ex)
             {

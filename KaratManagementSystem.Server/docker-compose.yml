@@ -1,0 +1,21 @@
+services:
+  app:
+    image: karatmanagementsystem
+    build:
+      context: .
+      dockerfile: KaratManagementSystem.Server/Dockerfile
+    ports:
+      - "8780:8080"
+      - "8781:8081"
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      ConnectionStrings__DefaultConnection: Host=db-1;Port=5432;Database=karat;Username=postgres;Password=PostniyaPassnota
+
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: karat
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: PostniyaPassnota

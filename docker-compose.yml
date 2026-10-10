@@ -1,0 +1,34 @@
+volumes:
+  postgres_data:
+
+services:
+  db:
+    image: postgres:17
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: karat
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: PostniyaPassnota
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d karat"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+    restart: unless-stopped
+
+  karatmanagementsystem.server:
+    image: ${DOCKER_REGISTRY-}karatmanagementsystemserver
+    build:
+      context: .
+      dockerfile: KaratManagementSystem.Server/Dockerfile
+    ports:
+      - "8780:8080"
+      - "8781:8081"
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy  
+    environment:
+      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=karat;Username=postgres;Password=PostniyaPassnota
